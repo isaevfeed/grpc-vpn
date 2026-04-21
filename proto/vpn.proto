@@ -10,4 +10,5 @@ service VPNService {
 
 message Package {
   bytes data = 1;
+  string target = 2;
 }

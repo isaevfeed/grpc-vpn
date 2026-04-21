@@ -24,6 +24,7 @@ const (
 type Package struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Data          []byte                 `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	Target        string                 `protobuf:"bytes,2,opt,name=target,proto3" json:"target,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -65,13 +66,21 @@ func (x *Package) GetData() []byte {
 	return nil
 }
 
+func (x *Package) GetTarget() string {
+	if x != nil {
+		return x.Target
+	}
+	return ""
+}
+
 var File_proto_vpn_proto protoreflect.FileDescriptor
 
 const file_proto_vpn_proto_rawDesc = "" +
 	"\n" +
-	"\x0fproto/vpn.proto\x12\x03vpn\"\x1d\n" +
+	"\x0fproto/vpn.proto\x12\x03vpn\"5\n" +
 	"\aPackage\x12\x12\n" +
-	"\x04data\x18\x01 \x01(\fR\x04data26\n" +
+	"\x04data\x18\x01 \x01(\fR\x04data\x12\x16\n" +
+	"\x06target\x18\x02 \x01(\tR\x06target26\n" +
 	"\n" +
 	"VPNService\x12(\n" +
 	"\x06Tunnel\x12\f.vpn.Package\x1a\f.vpn.Package(\x010\x01B\x1cZ\x1ainternal/transport/grpc/pbb\x06proto3"
