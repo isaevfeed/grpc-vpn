@@ -22,9 +22,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	msg := []byte("Hello, world")
-
-	err = stream.Send(&pb.Package{Data: msg})
+	err = stream.Send(&pb.Package{
+		Data:   []byte("GET / HTTP/1.1\r\nHost: google.com\r\n\r\n"),
+		Target: "google.com:80",
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
