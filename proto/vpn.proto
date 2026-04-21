@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package vpn;
+
+option go_package = "internal/transport/grpc/pb";
+
+service VPNService {
+  rpc Tunnel(stream Package) returns (stream Package);
+}
+
+message Package {
+  bytes data = 1;
+}
