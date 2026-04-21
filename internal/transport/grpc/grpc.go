@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"errors"
 	"fmt"
 	"google.golang.org/grpc"
 	"grpc-vpn/internal/transport/grpc/pb"
@@ -34,13 +35,18 @@ func (t *transport) Tunnel(stream pb.VPNService_TunnelServer) error {
 		if err != nil {
 			return fmt.Errorf("stream.Recv: %w", err)
 		}
+		if packet == nil {
+			return errors.New("stream.Recv: packet is nil")
+		}
 
 		once.Do(func() {
-			targetConn, err = net.Dial("tcp", packet.Target)
-			if err != nil {
+			conn, dialErr := net.Dial("tcp", packet.Target)
+			if dialErr != nil {
 				log.Println("net.Dial", err)
 				return
 			}
+
+			targetConn = conn
 
 			go func() {
 				buf := make([]byte, 4096)

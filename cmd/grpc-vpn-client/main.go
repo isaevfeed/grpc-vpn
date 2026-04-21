@@ -2,38 +2,27 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"google.golang.org/grpc"
-	"grpc-vpn/internal/transport/grpc/pb"
+	"grpc-vpn/internal/transport/grpc"
+	"grpc-vpn/internal/transport/socks5"
 	"log"
+	"log/slog"
+	"net"
+	"os"
+	"time"
 )
 
 func main() {
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	ctx, _ := context.WithTimeout(context.Background(), time.Minute)
+	grpcClient, err := grpc.NewClient("localhost:50051")
 	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close()
-
-	client := pb.NewVPNServiceClient(conn)
-
-	stream, err := client.Tunnel(context.Background())
-	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
-	err = stream.Send(&pb.Package{
-		Data:   []byte("GET / HTTP/1.1\r\nHost: google.com\r\n\r\n"),
-		Target: "google.com:80",
+	srv := socks5.New(":1080", slog.New(slog.NewJSONHandler(os.Stdout, nil)))
+	srv.Start(func(conn net.Conn, target string) {
+		err = grpcClient.Handle(ctx, conn, target)
+		if err != nil {
+			log.Println(err)
+		}
 	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	resp, err := stream.Recv()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("tunnel response:", string(resp.Data))
 }
