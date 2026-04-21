@@ -2,6 +2,7 @@ package main
 
 import (
 	"grpc-vpn/internal/app"
+	"grpc-vpn/internal/transport/grpc"
 	"log/slog"
 	"os"
 )
@@ -9,6 +10,7 @@ import (
 func main() {
 	//TODO сконфигурировать логгер
 	log := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	grpcSrv := grpc.New()
 
-	app.New(log).MustRun()
+	app.New(log, grpcSrv).MustRun()
 }
